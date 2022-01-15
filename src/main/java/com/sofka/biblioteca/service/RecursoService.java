@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RecursoService {
@@ -71,6 +74,19 @@ public class RecursoService {
         recurso.setDisponible(true);
         repository.save(recurso);
         return ResponseEntity.ok().body("El recurso ha sido devuelto exitosamente");
+    }
+
+    public ResponseEntity<List<RecursoDto>> recomendar(String tipoRecurso, String tematica){
+        List<Recurso> recursos = repository.findAllByTipo(tipoRecurso);
+        recursos.addAll(repository.findAllByTematica(tematica).stream().collect(Collectors.toList()));
+
+        List<RecursoDto> recursosDto = new ArrayList<>();
+
+        for (Recurso recurso: recursos) {
+            recursosDto.add(MappingUtil.MapperToRecursoDto(recurso));
+        }
+
+        return ResponseEntity.ok().body(recursosDto);
     }
 
     public ResponseEntity<Object> getRecurso(String id){
