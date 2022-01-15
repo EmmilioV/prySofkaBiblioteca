@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RecursoService {
@@ -33,9 +33,9 @@ public class RecursoService {
     }
 
     public ResponseEntity<String> isDisponible(String id){
-        Recurso recurso = repository.findById(id).orElse(null);
+        Recurso recurso = repository.findById(id).orElse( null);
 
-        if(recurso == null)
+        if(doesNotExists(recurso))
             return ResponseEntity.badRequest().body("No existe el recurso en la bd");
 
         if(!recurso.getDisponible())
@@ -44,9 +44,24 @@ public class RecursoService {
         return ResponseEntity.ok().body("El recurso está disponible");
     }
 
+    public ResponseEntity<String> prestar(String id){
+        Recurso recurso = repository.findById(id).orElse( null);
+
+        if(doesNotExists(recurso))
+            return ResponseEntity.badRequest().body("No existe el recurso en la bd");
+
+        if(!recurso.getDisponible())
+            return ResponseEntity.ok().body("El recurso no está disponible para ser prestado, la fecha de prestamo actual del ultimo ejemplar es: " + recurso.getUltimaFechaPrestamo());
+
+        recurso.setDisponible(false);
+        recurso.setUltimaFechaPrestamo(LocalDate.now());
+        repository.save(recurso);
+        return ResponseEntity.ok().body("El recurso ha sido prestado exitosamente");
+    }
+
     public ResponseEntity<Object> getRecurso(String id){
         Recurso recurso = repository.findById(id).orElse(null);
-        if(recurso == null)
+        if(doesNotExists(recurso))
         {
             return ResponseEntity.badRequest().body("No existe el recurso en la bd");
         }
@@ -65,5 +80,9 @@ public class RecursoService {
         }
         repository.deleteById(id);
         return ResponseEntity.ok().body(" recurso eliminado con exito");
+    }
+
+    private boolean doesNotExists(Recurso recurso) {
+        return recurso == null;
     }
 }
