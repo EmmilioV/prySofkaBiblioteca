@@ -59,6 +59,20 @@ public class RecursoService {
         return ResponseEntity.ok().body("El recurso ha sido prestado exitosamente");
     }
 
+    public ResponseEntity<String> devolver(String id){
+        Recurso recurso = repository.findById(id).orElse( null);
+
+        if(doesNotExists(recurso))
+            return ResponseEntity.badRequest().body("No existe el recurso en la bd");
+
+        if(recurso.getDisponible())
+            return ResponseEntity.ok().body("El recurso no se encontraba prestado, por lo tanto no puede ser devuelto");
+
+        recurso.setDisponible(true);
+        repository.save(recurso);
+        return ResponseEntity.ok().body("El recurso ha sido devuelto exitosamente");
+    }
+
     public ResponseEntity<Object> getRecurso(String id){
         Recurso recurso = repository.findById(id).orElse(null);
         if(doesNotExists(recurso))

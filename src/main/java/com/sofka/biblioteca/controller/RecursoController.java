@@ -43,6 +43,12 @@ public class RecursoController {
         return service.prestar(id);
     }
 
+    @RequestMapping("/{id}/devolver")
+    public ResponseEntity<String> devolverRecurso(@PathVariable String id){
+        Objects.requireNonNull(id);
+        return service.devolver(id);
+    }
+
     @PutMapping("/edit")
     public ResponseEntity<RecursoDto> actualizarRecurso(@RequestBody RecursoDto recursoDto){
         return service.updateRecurso(recursoDto);
