@@ -32,6 +32,18 @@ public class RecursoService {
         return recursos;
     }
 
+    public ResponseEntity<String> isDisponible(String id){
+        Recurso recurso = repository.findById(id).orElse(null);
+
+        if(recurso == null)
+            return ResponseEntity.badRequest().body("No existe el recurso en la bd");
+
+        if(!recurso.getDisponible())
+            return ResponseEntity.ok().body("El recurso no está disponible, la fecha de prestamo actual del ultimo ejemplar es: " + recurso.getUltimaFechaPrestamo());
+
+        return ResponseEntity.ok().body("El recurso está disponible");
+    }
+
     public ResponseEntity<Object> getRecurso(String id){
         Recurso recurso = repository.findById(id).orElse(null);
         if(recurso == null)

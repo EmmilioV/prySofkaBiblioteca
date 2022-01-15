@@ -31,6 +31,12 @@ public class RecursoController {
         return service.getRecurso(id);
     }
 
+    @RequestMapping("/{id}/disponibilidad")
+    public ResponseEntity<String> consultarDisponibilidad(@PathVariable String id){
+        Objects.requireNonNull(id);
+        return service.isDisponible(id);
+    }
+
     @PutMapping("/edit")
     public ResponseEntity<RecursoDto> actualizarRecurso(@RequestBody RecursoDto recursoDto){
         return service.updateRecurso(recursoDto);
